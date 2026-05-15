@@ -1,25 +1,41 @@
 <div class="container">
-  <h1>Rapprochement Véhicules NARSA / Sage X3</h1>
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Dashboard</span>
+      <h1>Rapprochement Vehicules NARSA / Sage X3</h1>
+    </div>
+  </header>
 
-  <div class="card">
-    <h2>1. Import Excel NARSA</h2>
-    <input type="file" (change)="onNarsaFileSelected($event)" />
-    <button (click)="uploadNarsa()">Uploader NARSA</button>
-  </div>
+  <section class="dashboard-grid" aria-label="Statistiques de rapprochement">
+    <article
+      class="metric-card"
+      *ngFor="let card of dashboardCards"
+      [ngClass]="'metric-card--' + card.tone"
+    >
+      <span class="metric-label">{{ card.label }}</span>
+      <strong class="metric-value">{{ card.value | number }}</strong>
+    </article>
+  </section>
 
-  <div class="card">
-    <h2>2. Import Excel Sage</h2>
-    <input type="file" (change)="onSageFileSelected($event)" />
-    <button (click)="uploadSage()">Uploader Sage</button>
-  </div>
+  <section class="upload-grid">
+    <div class="card">
+      <h2>1. Import Excel NARSA</h2>
+      <input type="file" (change)="onNarsaFileSelected($event)" />
+      <button (click)="uploadNarsa()">Uploader NARSA</button>
+    </div>
+
+    <div class="card">
+      <h2>2. Import Excel Sage</h2>
+      <input type="file" (change)="onSageFileSelected($event)" />
+      <button (click)="uploadSage()">Uploader Sage</button>
+    </div>
+  </section>
 
   <div class="actions">
     <button class="compare" (click)="runProcess()">
-  Importer les deux fichiers et lancer la comparaison
-</button>
-    <button class="delete" (click)="resetData()">
-  Supprimer les données importées
-</button>
+      Importer les deux fichiers et lancer la comparaison
+    </button>
+    <button class="delete" (click)="resetData()">Supprimer les donnees importees</button>
   </div>
 
   <p class="message">{{ message }}</p>
@@ -29,7 +45,7 @@
       <tr>
         <th>Matricule</th>
         <th>Statut</th>
-        <th>Détails</th>
+        <th>Details</th>
       </tr>
     </thead>
     <tbody>
