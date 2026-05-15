@@ -1,0 +1,43 @@
+<div class="container">
+  <h1>Rapprochement Véhicules NARSA / Sage X3</h1>
+
+  <div class="card">
+    <h2>1. Import Excel NARSA</h2>
+    <input type="file" (change)="onNarsaFileSelected($event)" />
+    <button (click)="uploadNarsa()">Uploader NARSA</button>
+  </div>
+
+  <div class="card">
+    <h2>2. Import Excel Sage</h2>
+    <input type="file" (change)="onSageFileSelected($event)" />
+    <button (click)="uploadSage()">Uploader Sage</button>
+  </div>
+
+  <div class="actions">
+    <button class="compare" (click)="runProcess()">
+  Importer les deux fichiers et lancer la comparaison
+</button>
+    <button class="delete" (click)="resetData()">
+  Supprimer les données importées
+</button>
+  </div>
+
+  <p class="message">{{ message }}</p>
+
+  <table *ngIf="results.length > 0">
+    <thead>
+      <tr>
+        <th>Matricule</th>
+        <th>Statut</th>
+        <th>Détails</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of results">
+        <td>{{ r.matricule }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.details }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
