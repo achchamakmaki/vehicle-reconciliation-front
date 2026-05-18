@@ -21,7 +21,7 @@ export interface DashboardStats {
   providedIn: 'root',
 })
 export class VehicleReconciliation {
-  private apiUrl = 'http://localhost:8080/api/narsa';
+  private apiUrl = 'http://localhost:8081/api/narsa';
 
   constructor(private http: HttpClient) {}
 
@@ -45,6 +45,12 @@ export class VehicleReconciliation {
 
   getResults(): Observable<ComparisonResult[]> {
     return this.http.get<ComparisonResult[]>(`${this.apiUrl}/results`);
+  }
+
+  exportResults(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/results/export`, {
+      responseType: 'blob',
+    });
   }
 
   getStats(): Observable<DashboardStats> {

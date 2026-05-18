@@ -147,6 +147,12 @@ button:hover {
   border: none;
 }
 
+.export {
+  background: #0f766e;
+  color: white;
+  border: none;
+}
+
 .delete {
   background: #dc2626;
   color: white;

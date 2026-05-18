@@ -121,6 +121,17 @@ export class ReconciliationComponent implements OnInit {
     });
   }
 
+  exportExcel() {
+    this.service.exportResults().subscribe((file) => {
+      const url = window.URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'comparison-results.xlsx';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
   runProcess() {
     if (!this.narsaFile || !this.sageFile) {
       this.message = 'Veuillez sélectionner les deux fichiers Excel';

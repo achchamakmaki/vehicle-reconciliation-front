@@ -1,0 +1,48 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">JA</span>
+      <div>
+        <strong>Jbel Annour</strong>
+        <small>NARSA / Sage X3</small>
+      </div>
+    </div>
+
+    <nav class="navigation" aria-label="Navigation principale">
+      <ng-container *ngFor="let item of navigationItems">
+        <a
+          *ngIf="item.route"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+        >
+          {{ item.label }}
+        </a>
+
+        <button *ngIf="item.action === 'export'" type="button" (click)="exportExcel()">
+          {{ item.label }}
+        </button>
+      </ng-container>
+    </nav>
+
+    <button class="logout" type="button" (click)="logout()">Deconnexion</button>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <span>Application interne</span>
+        <h1>Rapprochement vehicules</h1>
+      </div>
+
+      <div class="user-chip">
+        <strong>{{ currentUser?.fullName || 'Utilisateur' }}</strong>
+        <small>{{ currentUser?.role || 'USER' }}</small>
+      </div>
+    </header>
+
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

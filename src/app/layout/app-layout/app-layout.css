@@ -1,0 +1,157 @@
+.app-shell {
+  min-height: 100vh;
+  background: #eef2f7;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 282px;
+  padding: 24px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  background: #2563eb;
+  font-weight: 800;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand small {
+  margin-top: 3px;
+  color: #94a3b8;
+}
+
+.navigation {
+  display: grid;
+  gap: 6px;
+}
+
+.navigation a,
+.navigation button,
+.logout {
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+}
+
+.navigation a:hover,
+.navigation button:hover,
+.navigation a.active {
+  background: rgba(37, 99, 235, 0.18);
+  color: #ffffff;
+}
+
+.logout {
+  margin-top: auto;
+  background: rgba(220, 38, 38, 0.14);
+  color: #fecaca;
+}
+
+.main-panel {
+  min-height: 100vh;
+  margin-left: 282px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 82px;
+  padding: 16px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.topbar span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.topbar h1 {
+  margin: 4px 0 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.user-chip {
+  min-width: 160px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: right;
+}
+
+.user-chip strong,
+.user-chip small {
+  display: block;
+}
+
+.user-chip small {
+  margin-top: 2px;
+  color: #64748b;
+}
+
+.content {
+  min-height: calc(100vh - 82px);
+}
+
+@media (max-width: 920px) {
+  .sidebar {
+    position: static;
+    width: auto;
+  }
+
+  .main-panel {
+    margin-left: 0;
+  }
+
+  .topbar {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-chip {
+    width: 100%;
+    text-align: left;
+  }
+}

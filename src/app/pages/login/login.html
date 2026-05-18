@@ -1,0 +1,27 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <div class="auth-heading">
+      <span>Jbel Annour</span>
+      <h1>Connexion</h1>
+      <p>Accedez au rapprochement vehicules NARSA / Sage X3.</p>
+    </div>
+
+    <form (ngSubmit)="login()">
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" required />
+      </label>
+
+      <label>
+        Mot de passe
+        <input type="password" name="password" [(ngModel)]="password" required />
+      </label>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit">Se connecter</button>
+    </form>
+
+    <p class="auth-link">Pas encore de compte ? <a routerLink="/register">Creer un compte</a></p>
+  </section>
+</main>
