@@ -1,0 +1,48 @@
+<main class="login-page">
+  <section class="login-card">
+    <div class="brand">
+      <span class="brand-mark">JA</span>
+      <div>
+        <strong>Jbel Annour</strong>
+        <small>Gestion flotte</small>
+      </div>
+    </div>
+
+    <div class="heading">
+      <span>Application interne</span>
+      <h1>Creation de compte</h1>
+      <p>Ajoutez un compte utilisateur pour acceder a l'application flotte.</p>
+    </div>
+
+    <form (ngSubmit)="register()">
+      <label>
+        Nom complet
+        <input type="text" name="fullName" [(ngModel)]="fullName" placeholder="Nom complet" />
+      </label>
+
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" placeholder="nom@jbelannour.ma" />
+      </label>
+
+      <label>
+        Mot de passe
+        <input type="password" name="password" [(ngModel)]="password" placeholder="Mot de passe" />
+      </label>
+
+      <label>
+        Role
+        <select name="role" [(ngModel)]="role">
+          <option value="USER">USER</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </label>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit">Creer le compte</button>
+    </form>
+
+    <a routerLink="/login">Deja un compte ? Se connecter</a>
+  </section>
+</main>

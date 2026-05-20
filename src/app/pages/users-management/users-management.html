@@ -1,0 +1,151 @@
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <span>Administration</span>
+      <h2>Gestion utilisateurs</h2>
+      <p>Controle des acces, roles et comptes actifs de l'application flotte.</p>
+    </div>
+
+    <button class="primary-action" type="button" (click)="openCreateForm()">Ajouter utilisateur</button>
+  </div>
+
+
+
+  <div class="toolbar">
+    <label>
+      Recherche
+      <input
+        type="text"
+        placeholder="Nom ou email"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onFiltersChange()"
+      />
+    </label>
+
+    <label>
+      Role
+      <select [(ngModel)]="roleFilter" (ngModelChange)="onFiltersChange()">
+        <option value="ALL">Tous les roles</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="USER">USER</option>
+      </select>
+    </label>
+  </div>
+
+  <p class="message success" *ngIf="message">{{ message }}</p>
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="message info" *ngIf="loadingUsers">Chargement des utilisateurs...</p>
+
+  <form
+    #userFormPanel
+    class="form-panel"
+    [class.edit-mode]="editingUser"
+    *ngIf="formVisible"
+    (ngSubmit)="save()"
+  >
+    <div class="form-title">
+      <div>
+        <strong>{{ editingUser ? 'Modifier utilisateur' : 'Nouvel utilisateur' }}</strong>
+        <small *ngIf="editingUser">{{ editingUser.email }}</small>
+      </div>
+      <button type="button" class="ghost" (click)="formVisible = false">Fermer</button>
+    </div>
+
+    <div class="form-grid">
+      <label>
+        Nom complet
+        <input name="fullName" [(ngModel)]="form.fullName" placeholder="Nom complet" />
+      </label>
+
+      <label>
+        Email
+        <input name="email" [(ngModel)]="form.email" placeholder="email@jbelannour.ma" />
+      </label>
+
+      <label>
+        Mot de passe
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="form.password"
+          [placeholder]="editingUser ? 'Laisser vide pour garder' : 'Mot de passe'"
+        />
+      </label>
+
+      <label>
+        Role
+        <select name="role" [(ngModel)]="form.role">
+          <option value="USER">USER</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </label>
+
+      <label class="checkbox-line">
+        <input type="checkbox" name="active" [(ngModel)]="form.active" />
+        Actif
+      </label>
+    </div>
+
+    <button type="submit" class="primary-action" [disabled]="saving">
+      {{ saving ? 'Enregistrement...' : (editingUser ? 'Enregistrer' : 'Creer') }}
+    </button>
+  </form>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Statut</th>
+          <th>Creation</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of paginatedUsers">
+          <td>
+            <strong>{{ user.fullName }}</strong>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="status-switch"
+              [class.active]="user.active"
+              (click)="toggleStatus(user)"
+            >
+              {{ user.active ? 'Actif' : 'Inactif' }}
+            </button>
+          </td>
+          <td>{{ user.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td class="actions">
+            <button type="button" class="secondary" (click)="edit(user)">Modifier</button>
+            <button type="button" class="warning" (click)="resetPassword(user)">Reset password</button>
+            <button
+              type="button"
+              class="danger"
+              (click)="delete(user)"
+              [disabled]="isDeleting(user)"
+            >
+              {{ isDeleting(user) ? 'Suppression...' : 'Supprimer' }}
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="!loadingUsers && paginatedUsers.length === 0">
+          <td colspan="6" class="empty">Aucun utilisateur trouve.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button type="button" (click)="setPage(page - 1)" [disabled]="page === 1">Precedent</button>
+    <span>Page {{ page }} / {{ totalPages }}</span>
+    <button type="button" (click)="setPage(page + 1)" [disabled]="page === totalPages">Suivant</button>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+<section class="page">
+  <div class="page-heading">
+    <span>Workflows</span>
+    <h2>Automatisations n8n</h2>
+  </div>
+
+  <div class="webhook-card">
+    <h3>Webhooks disponibles</h3>
+    <p>POST /api/automations/webhooks/fuel-consumption</p>
+    <p>POST /api/automations/webhooks/infraction</p>
+    <p>POST /api/automations/webhooks/weekly-report</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Workflow</th>
+        <th>Source</th>
+        <th>Statut</th>
+        <th>Message</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logs">
+        <td>{{ log.workflowType }}</td>
+        <td>{{ log.source }}</td>
+        <td>{{ log.status }}</td>
+        <td>{{ log.message }}</td>
+        <td>{{ log.createdAt }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

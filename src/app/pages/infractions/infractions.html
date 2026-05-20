@@ -1,0 +1,49 @@
+<section class="page">
+  <div class="page-heading">
+    <span>Suivi juridique</span>
+    <h2>Infractions routieres</h2>
+  </div>
+
+  <form class="form-card" (ngSubmit)="save()">
+    <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" />
+    <input name="driverName" placeholder="Chauffeur" [(ngModel)]="form.driverName" />
+    <input name="infractionDate" type="date" [(ngModel)]="form.infractionDate" />
+    <input name="location" placeholder="Lieu" [(ngModel)]="form.location" />
+    <input name="type" placeholder="Type" [(ngModel)]="form.type" />
+    <input name="amount" type="number" placeholder="Montant" [(ngModel)]="form.amount" />
+    <select name="paymentStatus" [(ngModel)]="form.paymentStatus">
+      <option value="NON_PAYE">NON_PAYE</option>
+      <option value="PAYE">PAYE</option>
+    </select>
+    <input name="reference" placeholder="Reference" [(ngModel)]="form.reference" />
+    <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Matricule</th>
+        <th>Chauffeur</th>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Montant</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let infraction of infractions">
+        <td>{{ infraction.matricule }}</td>
+        <td>{{ infraction.driverName }}</td>
+        <td>{{ infraction.infractionDate }}</td>
+        <td>{{ infraction.type }}</td>
+        <td>{{ infraction.amount | number }}</td>
+        <td>{{ infraction.paymentStatus }}</td>
+        <td>
+          <button type="button" class="secondary" (click)="edit(infraction)">Modifier</button>
+          <button type="button" class="danger" (click)="delete(infraction.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

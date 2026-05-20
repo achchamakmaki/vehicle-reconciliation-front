@@ -1,0 +1,47 @@
+<section class="page">
+  <div class="page-heading">
+    <span>Exploitation</span>
+    <h2>Consommation gasoil</h2>
+  </div>
+
+  <form class="form-card" (ngSubmit)="save()">
+    <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" />
+    <input name="driverName" placeholder="Chauffeur" [(ngModel)]="form.driverName" />
+    <input name="station" placeholder="Station" [(ngModel)]="form.station" />
+    <input name="consumptionDate" type="date" [(ngModel)]="form.consumptionDate" />
+    <input name="liters" type="number" placeholder="Litres" [(ngModel)]="form.liters" />
+    <input name="amount" type="number" placeholder="Montant" [(ngModel)]="form.amount" />
+    <input type="file" (change)="onReceiptSelected($event)" />
+    <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Matricule</th>
+        <th>Chauffeur</th>
+        <th>Station</th>
+        <th>Date</th>
+        <th>Litres</th>
+        <th>Montant</th>
+        <th>Ticket</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fuel of fuelConsumptions">
+        <td>{{ fuel.matricule }}</td>
+        <td>{{ fuel.driverName }}</td>
+        <td>{{ fuel.station }}</td>
+        <td>{{ fuel.consumptionDate }}</td>
+        <td>{{ fuel.liters | number }}</td>
+        <td>{{ fuel.amount | number }}</td>
+        <td>{{ fuel.receiptPhotoPath ? 'Oui' : 'Non' }}</td>
+        <td>
+          <button type="button" class="secondary" (click)="edit(fuel)">Modifier</button>
+          <button type="button" class="danger" (click)="delete(fuel.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

@@ -1,0 +1,37 @@
+<main class="login-page">
+  <section class="login-card">
+    <div class="brand">
+      <span class="brand-mark">JA</span>
+      <div>
+        <strong>Jbel Annour</strong>
+        <small>Gestion flotte</small>
+      </div>
+    </div>
+
+    <div class="heading">
+      <span>Application interne</span>
+      <h1>Connexion</h1>
+      <p>Accedez au dashboard de gestion flotte et rapprochement NARSA / Sage.</p>
+    </div>
+
+    <form (ngSubmit)="login()" novalidate>
+      <label>
+        Email
+        <input type="text" name="email" [(ngModel)]="email" placeholder="nom@jbelannour.ma" />
+      </label>
+
+      <label>
+        Mot de passe
+        <input type="password" name="password" [(ngModel)]="password" placeholder="Votre mot de passe" />
+      </label>
+
+      <p class="error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <a routerLink="/register">Creer un compte</a>
+  </section>
+</main>

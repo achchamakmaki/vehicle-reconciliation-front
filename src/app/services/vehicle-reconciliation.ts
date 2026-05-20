@@ -51,6 +51,12 @@ export class VehicleReconciliation {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
 
+  exportResults(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/results/export`, {
+      responseType: 'blob',
+    });
+  }
+
   resetData(): Observable<string> {
     return this.http.delete(`${this.apiUrl}/reset`, {
       responseType: 'text',

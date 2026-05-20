@@ -1,0 +1,57 @@
+.page {
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+.page-heading span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.page-heading h2 {
+  margin: 6px 0 20px;
+  color: #0f172a;
+  font-size: 30px;
+}
+
+.webhook-card {
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.webhook-card h3 {
+  margin: 0 0 12px;
+}
+
+.webhook-card p {
+  margin: 8px 0;
+  color: #334155;
+  font-family: Consolas, monospace;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+th {
+  background: #eef2f7;
+  color: #475569;
+  font-size: 12px;
+  text-transform: uppercase;
+}

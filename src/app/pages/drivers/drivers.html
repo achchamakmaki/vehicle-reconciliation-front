@@ -1,0 +1,45 @@
+<section class="page">
+  <div class="page-heading">
+    <span>Ressources</span>
+    <h2>Chauffeurs</h2>
+  </div>
+
+  <form class="form-card" (ngSubmit)="save()">
+    <input name="fullName" placeholder="Nom complet" [(ngModel)]="form.fullName" required />
+    <input name="phone" placeholder="Telephone" [(ngModel)]="form.phone" />
+    <input name="cin" placeholder="CIN" [(ngModel)]="form.cin" />
+    <input name="licenseNumber" placeholder="Permis" [(ngModel)]="form.licenseNumber" />
+    <input name="licenseExpiryDate" type="date" [(ngModel)]="form.licenseExpiryDate" />
+    <select name="status" [(ngModel)]="form.status">
+      <option value="ACTIF">ACTIF</option>
+      <option value="INACTIF">INACTIF</option>
+    </select>
+    <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Telephone</th>
+        <th>CIN</th>
+        <th>Permis</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let driver of drivers">
+        <td>{{ driver.fullName }}</td>
+        <td>{{ driver.phone }}</td>
+        <td>{{ driver.cin }}</td>
+        <td>{{ driver.licenseNumber }}</td>
+        <td>{{ driver.status }}</td>
+        <td>
+          <button type="button" class="secondary" (click)="edit(driver)">Modifier</button>
+          <button type="button" class="danger" (click)="delete(driver.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

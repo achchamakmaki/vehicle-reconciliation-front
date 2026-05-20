@@ -1,0 +1,13 @@
+<section class="page">
+  <div class="page-heading">
+    <span>Vue globale</span>
+    <h2>Dashboard flotte</h2>
+  </div>
+
+  <div class="dashboard-grid">
+    <article class="metric-card" *ngFor="let card of cards">
+      <span>{{ card.label }}</span>
+      <strong>{{ card.value | number }}</strong>
+    </article>
+  </div>
+</section>
