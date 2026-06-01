@@ -23,6 +23,7 @@ export class VehiclesComponent implements OnInit {
   saving = false;
   errorMessage = '';
   message = '';
+  dataSource = 'Base locale';
   formVisible = false;
   form: Vehicle = this.emptyForm();
 
@@ -49,7 +50,8 @@ export class VehiclesComponent implements OnInit {
 
     return this.vehicles.filter((vehicle) =>
       vehicle.matricule?.toLowerCase().includes(term) ||
-      vehicle.normalizedMatricule?.toLowerCase().includes(term),
+      vehicle.normalizedMatricule?.toLowerCase().includes(term) ||
+      vehicle.sageCode?.toLowerCase().includes(term),
     );
   }
 
@@ -64,12 +66,44 @@ export class VehiclesComponent implements OnInit {
       }),
     ).subscribe({
       next: (vehicles) => {
-        this.vehicles = vehicles;
+        if (vehicles.length > 0) {
+          this.vehicles = vehicles;
+          this.dataSource = 'Base locale';
+          return;
+        }
+
+        this.loadSageX3Vehicles();
       },
       error: (error: HttpErrorResponse) => {
         this.errorMessage = error.status === 403
           ? 'Session expiree, veuillez vous reconnecter.'
           : 'Impossible de charger les vehicules synchronises.';
+      },
+    });
+  }
+
+  loadSageX3Vehicles() {
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.fleetApi.getSageX3Vehicles().pipe(
+      finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }),
+    ).subscribe({
+      next: (vehicles) => {
+        this.vehicles = vehicles;
+        this.dataSource = 'API Sage X3';
+        this.message = vehicles.length
+          ? `${vehicles.length} vehicule(s) charges depuis Sage X3.`
+          : 'Aucun vehicule retourne par Sage X3.';
+      },
+      error: (error: HttpErrorResponse) => {
+        this.vehicles = [];
+        this.errorMessage = error.status === 403
+          ? 'Session expiree, veuillez vous reconnecter.'
+          : `Impossible de charger les vehicules depuis Sage X3. Statut ${error.status}.`;
       },
     });
   }

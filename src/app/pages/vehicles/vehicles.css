@@ -31,6 +31,13 @@
   color: #64748b;
 }
 
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .toolbar,
 .form-card,
 .table-card {
@@ -62,7 +69,8 @@
 
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(260px, 420px);
+  grid-template-columns: minmax(260px, 420px) auto;
+  align-items: end;
   gap: 12px;
   margin-bottom: 16px;
   padding: 16px;
@@ -109,6 +117,24 @@ button:disabled {
   border: 0;
   background: #2563eb;
   color: #ffffff;
+}
+
+.secondary-action {
+  border: 0;
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.source-badge {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
 }
 
 .ghost {
@@ -220,6 +246,11 @@ tbody tr:hover {
 .status-badge.absent_in_narsa {
   background: #fee2e2;
   color: #b91c1c;
+}
+
+.status-badge.sage_x3 {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .status-badge.unknown {

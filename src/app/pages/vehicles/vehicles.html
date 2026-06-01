@@ -6,7 +6,10 @@
       <p>Consultation des vehicules synchronises depuis le rapprochement NARSA / Sage X3.</p>
     </div>
 
-    <button class="primary-action" type="button" (click)="openCreateForm()">Ajouter vehicule</button>
+    <div class="heading-actions">
+      <button class="secondary-action" type="button" (click)="loadSageX3Vehicles()">Charger Sage X3</button>
+      <button class="primary-action" type="button" (click)="openCreateForm()">Ajouter vehicule</button>
+    </div>
   </div>
 
   <form class="form-card" *ngIf="formVisible" (ngSubmit)="save()">
@@ -58,7 +61,7 @@
 
   <div class="toolbar">
     <label>
-      Recherche matricule
+      Recherche matricule / Sage Code
       <input
         name="searchTerm"
         type="text"
@@ -66,6 +69,7 @@
         [(ngModel)]="searchTerm"
       />
     </label>
+    <span class="source-badge">{{ dataSource }}</span>
   </div>
 
   <p class="message info" *ngIf="loading">Chargement des vehicules...</p>
@@ -100,8 +104,10 @@
             </span>
           </td>
           <td class="actions">
-            <button type="button" class="secondary" (click)="edit(vehicle)">Modifier</button>
-            <button type="button" class="danger" (click)="delete(vehicle)">Supprimer</button>
+            <button type="button" class="secondary" (click)="edit(vehicle)">
+              {{ vehicle.id ? 'Modifier' : 'Importer' }}
+            </button>
+            <button *ngIf="vehicle.id" type="button" class="danger" (click)="delete(vehicle)">Supprimer</button>
           </td>
         </tr>
 

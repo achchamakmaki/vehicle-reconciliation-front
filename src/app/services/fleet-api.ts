@@ -94,6 +94,10 @@ export class FleetApiService {
     return this.http.get<Vehicle[]>(`${this.apiBaseUrl}/vehicles`);
   }
 
+  getSageX3Vehicles(): Observable<Vehicle[]> {
+    return this.http.get<Vehicle[]>(`${this.apiBaseUrl}/vehicles/sage-x3`);
+  }
+
   createVehicle(vehicle: Vehicle): Observable<Vehicle> {
     return this.http.post<Vehicle>(`${this.apiBaseUrl}/vehicles`, vehicle);
   }
