@@ -4,10 +4,17 @@
     <h2>Dashboard flotte</h2>
   </div>
 
+  <p class="message info" *ngIf="loading">Chargement des statistiques...</p>
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
   <div class="dashboard-grid">
     <article class="metric-card" *ngFor="let card of cards">
       <span>{{ card.label }}</span>
       <strong>{{ card.value | number }}</strong>
     </article>
   </div>
+
+  <p class="empty-state" *ngIf="!loading && !errorMessage && !stats">
+    Aucune statistique chargee.
+  </p>
 </section>

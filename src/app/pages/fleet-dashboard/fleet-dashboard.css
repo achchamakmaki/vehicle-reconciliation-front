@@ -18,7 +18,7 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
   gap: 16px;
 }
 
@@ -44,6 +44,32 @@
   margin-top: 18px;
   color: #0f172a;
   font-size: 34px;
+}
+
+.message,
+.empty-state {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.info {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.empty-state {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
 }
 
 @media (max-width: 1100px) {

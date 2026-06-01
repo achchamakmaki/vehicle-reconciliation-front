@@ -3,26 +3,23 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface FleetDashboardStats {
-  totalVehicles: number;
-  compliantVehicles: number;
-  unpaidInfractions: number;
-  totalFuelConsumption: number;
-  currentMonthFuelConsumption: number;
-  detectedAnomalies: number;
-  vehiclesAbsentInSage: number;
-  vehiclesAbsentInNarsa: number;
+  totalNarsaVehicles: number;
+  totalSageVehicles: number;
+  matchCount: number;
+  absentInSageCount: number;
+  absentInNarsaCount: number;
 }
 
 export interface Vehicle {
   id?: number;
   matricule: string;
   normalizedMatricule?: string;
+  sageCode?: string;
   marque?: string;
   modele?: string;
   type?: string;
   status?: string;
-  sageReference?: string;
-  narsaReference?: string;
+  source?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -85,7 +82,7 @@ export class FleetApiService {
   constructor(private http: HttpClient) {}
 
   getDashboardStats(): Observable<FleetDashboardStats> {
-    return this.http.get<FleetDashboardStats>(`${this.apiBaseUrl}/dashboard/stats`);
+    return this.http.get<FleetDashboardStats>(`${this.apiBaseUrl}/narsa/stats`);
   }
 
   getVehicles(): Observable<Vehicle[]> {

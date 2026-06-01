@@ -1,51 +1,114 @@
 <section class="page">
   <div class="page-heading">
-    <span>Gestion flotte</span>
-    <h2>Vehicules</h2>
+    <div>
+      <span>Gestion flotte</span>
+      <h2>Vehicules importes</h2>
+      <p>Consultation des vehicules synchronises depuis le rapprochement NARSA / Sage X3.</p>
+    </div>
+
+    <button class="primary-action" type="button" (click)="openCreateForm()">Ajouter vehicule</button>
   </div>
 
-  <form class="form-card" (ngSubmit)="save()">
-    <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" required />
-    <input name="marque" placeholder="Marque" [(ngModel)]="form.marque" />
-    <input name="modele" placeholder="Modele" [(ngModel)]="form.modele" />
-    <input name="type" placeholder="Type" [(ngModel)]="form.type" />
-    <select name="status" [(ngModel)]="form.status">
-      <option value="CONFORME">CONFORME</option>
-      <option value="ABSENT_IN_SAGE">ABSENT_IN_SAGE</option>
-      <option value="ABSENT_IN_NARSA">ABSENT_IN_NARSA</option>
-    </select>
-    <input name="sageReference" placeholder="Reference Sage" [(ngModel)]="form.sageReference" />
-    <input name="narsaReference" placeholder="Reference NARSA" [(ngModel)]="form.narsaReference" />
-    <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
+  <form class="form-card" *ngIf="formVisible" (ngSubmit)="save()">
+    <div class="form-title">
+      <strong>{{ form.id ? 'Modifier vehicule' : 'Nouveau vehicule' }}</strong>
+      <button type="button" class="ghost" (click)="formVisible = false">Fermer</button>
+    </div>
+
+    <div class="form-grid">
+      <label>
+        Sage Code
+        <input name="sageCode" placeholder="VH001" [(ngModel)]="form.sageCode" />
+      </label>
+
+      <label>
+        Matricule
+        <input name="matricule" placeholder="20525-B-15" [(ngModel)]="form.matricule" required />
+      </label>
+
+      <label>
+        Marque
+        <input name="marque" placeholder="Marque" [(ngModel)]="form.marque" />
+      </label>
+
+      <label>
+        Modele
+        <input name="modele" placeholder="Modele" [(ngModel)]="form.modele" />
+      </label>
+
+      <label>
+        Type
+        <input name="type" placeholder="Type" [(ngModel)]="form.type" />
+      </label>
+
+      <label>
+        Status
+        <select name="status" [(ngModel)]="form.status">
+          <option value="CONFORME">CONFORME</option>
+          <option value="ABSENT_IN_SAGE">ABSENT_IN_SAGE</option>
+          <option value="ABSENT_IN_NARSA">ABSENT_IN_NARSA</option>
+        </select>
+      </label>
+    </div>
+
+    <button class="primary-action" type="submit" [disabled]="saving">
+      {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
   </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Matricule</th>
-        <th>Marque</th>
-        <th>Modele</th>
-        <th>Type</th>
-        <th>Statut</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let vehicle of vehicles">
-        <td>{{ vehicle.matricule }}</td>
-        <td>{{ vehicle.marque || '-' }}</td>
-        <td>{{ vehicle.modele || '-' }}</td>
-        <td>{{ vehicle.type || '-' }}</td>
-        <td>
-          <span class="status-badge" [ngClass]="statusClass(vehicle.status)">
-            {{ statusLabel(vehicle.status) }}
-          </span>
-        </td>
-        <td>
-          <button type="button" class="secondary" (click)="edit(vehicle)">Modifier</button>
-          <button type="button" class="danger" (click)="delete(vehicle.id)">Supprimer</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="toolbar">
+    <label>
+      Recherche matricule
+      <input
+        name="searchTerm"
+        type="text"
+        placeholder="Ex: 20525-B-15"
+        [(ngModel)]="searchTerm"
+      />
+    </label>
+  </div>
+
+  <p class="message info" *ngIf="loading">Chargement des vehicules...</p>
+  <p class="message success" *ngIf="message">{{ message }}</p>
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Sage Code</th>
+          <th>Matricule</th>
+          <th>Marque</th>
+          <th>Modele</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vehicle of filteredVehicles">
+          <td>{{ vehicle.sageCode || '-' }}</td>
+          <td>
+            <strong>{{ vehicle.matricule }}</strong>
+          </td>
+          <td>{{ vehicle.marque || '-' }}</td>
+          <td>{{ vehicle.modele || '-' }}</td>
+          <td>{{ vehicle.type || '-' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="statusClass(vehicle.status)">
+              {{ statusLabel(vehicle.status) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button type="button" class="secondary" (click)="edit(vehicle)">Modifier</button>
+            <button type="button" class="danger" (click)="delete(vehicle)">Supprimer</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="!loading && filteredVehicles.length === 0">
+          <td colspan="7" class="empty">Aucun vehicule trouve.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>

@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { NavigationEnd, Router } from '@angular/router';
 import { finalize, switchMap, tap } from 'rxjs';
+import { filter } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { ManagedUser, UserRequest, UsersAdminApiService } from '../../services/users-admin-api';
 
@@ -13,6 +17,8 @@ import { ManagedUser, UserRequest, UsersAdminApiService } from '../../services/u
   styleUrl: './users-management.css',
 })
 export class UsersManagementComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   @ViewChild('userFormPanel') userFormPanel?: ElementRef<HTMLElement>;
 
   users: ManagedUser[] = [];
@@ -33,10 +39,17 @@ export class UsersManagementComponent implements OnInit {
   constructor(
     private usersApi: UsersAdminApiService,
     private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.loadUsers();
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      filter((event) => event.urlAfterRedirects.startsWith('/users-management')),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => this.loadUsers());
   }
 
   get filteredUsers() {
@@ -81,13 +94,16 @@ export class UsersManagementComponent implements OnInit {
       switchMap(() => this.usersApi.findAll()),
       finalize(() => {
         this.loadingUsers = false;
+        this.cdr.detectChanges();
       }),
     ).subscribe({
       next: (users) => {
         this.replaceUsers(users);
       },
-      error: () => {
-        this.errorMessage = 'Impossible de charger les utilisateurs. Acces ADMIN requis.';
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage = error.status === 403
+          ? 'Session expiree, veuillez vous reconnecter.'
+          : 'Impossible de charger les utilisateurs.';
       },
     });
   }

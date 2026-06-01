@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, finalize } from 'rxjs';
 import { FleetApiService, Vehicle } from '../../services/fleet-api';
 
 @Component({
@@ -11,39 +15,129 @@ import { FleetApiService, Vehicle } from '../../services/fleet-api';
   styleUrl: './vehicles.css',
 })
 export class VehiclesComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   vehicles: Vehicle[] = [];
+  searchTerm = '';
+  loading = false;
+  saving = false;
+  errorMessage = '';
+  message = '';
+  formVisible = false;
   form: Vehicle = this.emptyForm();
 
-  constructor(private fleetApi: FleetApiService) {}
+  constructor(
+    private fleetApi: FleetApiService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.loadVehicles();
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      filter((event) => event.urlAfterRedirects.startsWith('/vehicles')),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => this.loadVehicles());
+  }
+
+  get filteredVehicles() {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.vehicles;
+    }
+
+    return this.vehicles.filter((vehicle) =>
+      vehicle.matricule?.toLowerCase().includes(term) ||
+      vehicle.normalizedMatricule?.toLowerCase().includes(term),
+    );
   }
 
   loadVehicles() {
-    this.fleetApi.getVehicles().subscribe((vehicles) => {
-      this.vehicles = vehicles;
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.fleetApi.getVehicles().pipe(
+      finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }),
+    ).subscribe({
+      next: (vehicles) => {
+        this.vehicles = vehicles;
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage = error.status === 403
+          ? 'Session expiree, veuillez vous reconnecter.'
+          : 'Impossible de charger les vehicules synchronises.';
+      },
     });
   }
 
-  save() {
-    const request = this.form.id
-      ? this.fleetApi.updateVehicle(this.form)
-      : this.fleetApi.createVehicle(this.form);
-
-    request.subscribe(() => {
-      this.form = this.emptyForm();
-      this.loadVehicles();
-    });
+  openCreateForm() {
+    this.form = this.emptyForm();
+    this.formVisible = true;
+    this.clearMessages();
   }
 
   edit(vehicle: Vehicle) {
     this.form = { ...vehicle };
+    this.formVisible = true;
+    this.clearMessages();
   }
 
-  delete(id?: number) {
-    if (!id) return;
-    this.fleetApi.deleteVehicle(id).subscribe(() => this.loadVehicles());
+  save() {
+    this.clearMessages();
+
+    if (!this.form.matricule?.trim()) {
+      this.errorMessage = 'Matricule obligatoire.';
+      return;
+    }
+
+    this.saving = true;
+    const request = this.form.id
+      ? this.fleetApi.updateVehicle(this.form)
+      : this.fleetApi.createVehicle(this.form);
+
+    request.pipe(
+      finalize(() => {
+        this.saving = false;
+        this.cdr.detectChanges();
+      }),
+    ).subscribe({
+      next: (vehicle) => {
+        this.upsertVehicle(vehicle);
+        this.formVisible = false;
+        this.form = this.emptyForm();
+        this.message = 'Vehicule enregistre avec succes.';
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage = error.status === 403
+          ? 'Session expiree, veuillez vous reconnecter.'
+          : 'Impossible d enregistrer le vehicule.';
+      },
+    });
+  }
+
+  delete(vehicle: Vehicle) {
+    this.clearMessages();
+
+    if (!vehicle.id || !window.confirm(`Supprimer le vehicule ${vehicle.matricule} ?`)) {
+      return;
+    }
+
+    this.fleetApi.deleteVehicle(vehicle.id).subscribe({
+      next: () => {
+        this.vehicles = this.vehicles.filter((currentVehicle) => currentVehicle.id !== vehicle.id);
+        this.message = 'Vehicule supprime avec succes.';
+        this.cdr.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage = error.status === 403
+          ? 'Session expiree, veuillez vous reconnecter.'
+          : 'Impossible de supprimer le vehicule.';
+      },
+    });
   }
 
   statusLabel(status?: string) {
@@ -63,15 +157,30 @@ export class VehiclesComponent implements OnInit {
     return (status || 'UNKNOWN').toLowerCase();
   }
 
+  private upsertVehicle(vehicle: Vehicle) {
+    const index = this.vehicles.findIndex((currentVehicle) => currentVehicle.id === vehicle.id);
+    if (index >= 0) {
+      this.vehicles = this.vehicles.map((currentVehicle) => currentVehicle.id === vehicle.id ? vehicle : currentVehicle);
+      return;
+    }
+
+    this.vehicles = [vehicle, ...this.vehicles];
+  }
+
+  private clearMessages() {
+    this.message = '';
+    this.errorMessage = '';
+  }
+
   private emptyForm(): Vehicle {
     return {
       matricule: '',
+      sageCode: '',
       marque: '',
       modele: '',
       type: '',
       status: 'CONFORME',
-      sageReference: '',
-      narsaReference: '',
+      source: 'MANUAL',
     };
   }
 }
