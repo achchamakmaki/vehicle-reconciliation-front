@@ -39,13 +39,18 @@ export interface Infraction {
   vehicleId?: number;
   driverId?: number;
   matricule?: string;
+  normalizedMatricule?: string;
   driverName?: string;
   infractionDate?: string;
   location?: string;
+  owner?: string;
+  tenant?: string;
   type?: string;
   amount?: number;
+  points?: number;
   paymentStatus?: string;
   reference?: string;
+  status?: string;
   notes?: string;
 }
 
@@ -131,6 +136,12 @@ export class FleetApiService {
 
   deleteInfraction(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiBaseUrl}/infractions/${id}`);
+  }
+
+  uploadInfractions(file: File): Observable<{ imported: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imported: number }>(`${this.apiBaseUrl}/infractions/upload`, formData);
   }
 
   getFuelConsumptions(): Observable<FuelConsumption[]> {

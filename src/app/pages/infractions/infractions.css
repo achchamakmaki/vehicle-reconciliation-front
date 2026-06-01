@@ -10,10 +10,63 @@
   text-transform: uppercase;
 }
 
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .page-heading h2 {
   margin: 6px 0 20px;
   color: #0f172a;
   font-size: 30px;
+}
+
+.import-button {
+  position: relative;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.import-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.alert {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.success {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.info {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .form-card {
@@ -54,12 +107,44 @@ button {
   background: #dc2626;
 }
 
+.badge {
+  display: inline-flex;
+  min-width: 116px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.badge-green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-orange {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.badge-red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.table-card {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
 table {
   width: 100%;
+  min-width: 1320px;
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #ffffff;
+  table-layout: fixed;
 }
 
 th,
@@ -67,6 +152,8 @@ td {
   padding: 12px;
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
+  vertical-align: middle;
+  line-height: 1.25;
 }
 
 th {
@@ -76,11 +163,79 @@ th {
   text-transform: uppercase;
 }
 
-td button {
-  margin-right: 8px;
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+.col-reference {
+  width: 140px;
+}
+
+.col-matricule {
+  width: 120px;
+}
+
+.col-date {
+  width: 105px;
+}
+
+.col-location {
+  width: 270px;
+}
+
+.col-type {
+  width: 180px;
+}
+
+.col-number {
+  width: 90px;
+}
+
+.col-points {
+  width: 75px;
+}
+
+.col-badge {
+  width: 145px;
+}
+
+.col-actions {
+  width: 170px;
+}
+
+.reference-cell,
+.matricule-cell {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.text-cell {
+  overflow-wrap: anywhere;
+  color: #0f172a;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row-actions button {
+  min-width: 112px;
+}
+
+.empty-row {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+  font-weight: 800;
 }
 
 @media (max-width: 900px) {
+  .page-heading {
+    flex-direction: column;
+  }
+
   .form-card {
     grid-template-columns: 1fr;
   }

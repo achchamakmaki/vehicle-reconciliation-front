@@ -1,49 +1,83 @@
 <section class="page">
   <div class="page-heading">
-    <span>Suivi juridique</span>
-    <h2>Infractions routieres</h2>
+    <div>
+      <span>Suivi juridique</span>
+      <h2>Infractions routieres</h2>
+    </div>
+    <label class="import-button">
+      {{ importing ? 'Import en cours...' : 'Importer Excel NARSA' }}
+      <input type="file" accept=".xlsx,.xls" (change)="uploadExcel($event)" [disabled]="importing" />
+    </label>
   </div>
 
+  <p *ngIf="message" class="alert success">{{ message }}</p>
+  <p *ngIf="error" class="alert error">{{ error }}</p>
+  <p *ngIf="loading && infractions.length === 0" class="alert info">Chargement des infractions...</p>
+
   <form class="form-card" (ngSubmit)="save()">
+    <input name="reference" placeholder="Reference PV" [(ngModel)]="form.reference" />
     <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" />
     <input name="driverName" placeholder="Chauffeur" [(ngModel)]="form.driverName" />
     <input name="infractionDate" type="date" [(ngModel)]="form.infractionDate" />
     <input name="location" placeholder="Lieu" [(ngModel)]="form.location" />
+    <input name="owner" placeholder="Proprietaire" [(ngModel)]="form.owner" />
+    <input name="tenant" placeholder="Locataire" [(ngModel)]="form.tenant" />
     <input name="type" placeholder="Type" [(ngModel)]="form.type" />
     <input name="amount" type="number" placeholder="Montant" [(ngModel)]="form.amount" />
+    <input name="points" type="number" placeholder="Points" [(ngModel)]="form.points" />
     <select name="paymentStatus" [(ngModel)]="form.paymentStatus">
       <option value="NON_PAYE">NON_PAYE</option>
       <option value="PAYE">PAYE</option>
     </select>
-    <input name="reference" placeholder="Reference" [(ngModel)]="form.reference" />
     <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
   </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Matricule</th>
-        <th>Chauffeur</th>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Montant</th>
-        <th>Statut</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let infraction of infractions">
-        <td>{{ infraction.matricule }}</td>
-        <td>{{ infraction.driverName }}</td>
-        <td>{{ infraction.infractionDate }}</td>
-        <td>{{ infraction.type }}</td>
-        <td>{{ infraction.amount | number }}</td>
-        <td>{{ infraction.paymentStatus }}</td>
-        <td>
-          <button type="button" class="secondary" (click)="edit(infraction)">Modifier</button>
-          <button type="button" class="danger" (click)="delete(infraction.id)">Supprimer</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-reference">Reference</th>
+          <th class="col-matricule">Matricule</th>
+          <th class="col-date">Date</th>
+          <th class="col-location">Lieu</th>
+          <th class="col-type">Type</th>
+          <th class="col-number">Montant</th>
+          <th class="col-points">Points</th>
+          <th class="col-badge">Paiement</th>
+          <th class="col-badge">Statut</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let infraction of infractions; trackBy: trackByInfraction">
+          <td class="reference-cell">{{ infraction.reference || '-' }}</td>
+          <td class="matricule-cell">{{ infraction.matricule || '-' }}</td>
+          <td>{{ infraction.infractionDate || '-' }}</td>
+          <td class="text-cell">{{ infraction.location || '-' }}</td>
+          <td class="text-cell">{{ infraction.type || '-' }}</td>
+          <td>{{ infraction.amount | number }}</td>
+          <td>{{ infraction.points ?? '-' }}</td>
+          <td>
+            <span [class]="paymentBadgeClass(infraction.paymentStatus)">
+              {{ infraction.paymentStatus || 'NON_PAYE' }}
+            </span>
+          </td>
+          <td>
+            <span [class]="infractionBadgeClass(infraction.status)">
+              {{ displayStatus(infraction.status) }}
+            </span>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button type="button" class="secondary" (click)="edit(infraction)">Modifier</button>
+              <button type="button" class="danger" (click)="delete(infraction.id)">Supprimer</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!loading && !error && infractions.length === 0">
+          <td colspan="10" class="empty-row">Aucune infraction trouvee.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>
