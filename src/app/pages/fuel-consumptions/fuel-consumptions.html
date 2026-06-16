@@ -5,43 +5,87 @@
   </div>
 
   <form class="form-card" (ngSubmit)="save()">
-    <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" />
-    <input name="driverName" placeholder="Chauffeur" [(ngModel)]="form.driverName" />
-    <input name="station" placeholder="Station" [(ngModel)]="form.station" />
     <input name="consumptionDate" type="date" [(ngModel)]="form.consumptionDate" />
+    <input name="fuelTime" type="time" placeholder="Heure" [(ngModel)]="form.fuelTime" />
+    <input name="invoiceNumber" placeholder="Facture" [(ngModel)]="form.invoiceNumber" />
+    <input name="product" placeholder="Produit" [(ngModel)]="form.product" />
     <input name="liters" type="number" placeholder="Litres" [(ngModel)]="form.liters" />
+    <input name="unitPrice" type="number" placeholder="Prix/L" [(ngModel)]="form.unitPrice" />
     <input name="amount" type="number" placeholder="Montant" [(ngModel)]="form.amount" />
+    <input name="paymentMethod" placeholder="Paiement" [(ngModel)]="form.paymentMethod" />
+    <input name="matricule" placeholder="Matricule" [(ngModel)]="form.matricule" />
     <input type="file" (change)="onReceiptSelected($event)" />
     <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
   </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Matricule</th>
-        <th>Chauffeur</th>
-        <th>Station</th>
-        <th>Date</th>
-        <th>Litres</th>
-        <th>Montant</th>
-        <th>Ticket</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let fuel of fuelConsumptions">
-        <td>{{ fuel.matricule }}</td>
-        <td>{{ fuel.driverName }}</td>
-        <td>{{ fuel.station }}</td>
-        <td>{{ fuel.consumptionDate }}</td>
-        <td>{{ fuel.liters | number }}</td>
-        <td>{{ fuel.amount | number }}</td>
-        <td>{{ fuel.receiptPhotoPath ? 'Oui' : 'Non' }}</td>
-        <td>
-          <button type="button" class="secondary" (click)="edit(fuel)">Modifier</button>
-          <button type="button" class="danger" (click)="delete(fuel.id)">Supprimer</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <p class="message info" *ngIf="loading">Chargement des consommations gasoil...</p>
+  <p class="message success" *ngIf="message">{{ message }}</p>
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Numero Facture</th>
+          <th>Date</th>
+          <th>Heure</th>
+          <th>Litres</th>
+          <th>Prix/L</th>
+          <th>Montant</th>
+          <th>Status</th>
+          <th>Ticket</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fuel of fuelConsumptions">
+          <td>{{ fuel.invoiceNumber || '-' }}</td>
+          <td>{{ fuel.consumptionDate || '-' }}</td>
+          <td>{{ fuel.fuelTime || '-' }}</td>
+          <td>{{ fuel.liters | number:'1.0-2' }}</td>
+          <td>{{ fuel.unitPrice | number:'1.0-2' }}</td>
+          <td>{{ fuel.amount | number:'1.0-2' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="statusClass(fuel.status)">
+              {{ fuel.status || 'Non defini' }}
+            </span>
+          </td>
+          <td>
+            <button
+              *ngIf="hasReceipt(fuel); else noReceipt"
+              type="button"
+              class="receipt-button"
+              (click)="openReceipt(fuel)"
+              title="Voir le ticket gasoil"
+            >
+              <img
+                *ngIf="receiptPreviewUrl(fuel)"
+                [src]="receiptPreviewUrl(fuel)"
+                alt="Ticket gasoil"
+              />
+              <span *ngIf="!receiptPreviewUrl(fuel)">Voir</span>
+            </button>
+            <ng-template #noReceipt>
+              <span class="no-receipt">-</span>
+            </ng-template>
+          </td>
+          <td class="actions">
+            <button type="button" class="secondary" (click)="edit(fuel)">Modifier</button>
+            <button type="button" class="danger" (click)="delete(fuel.id)">Supprimer</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="!loading && fuelConsumptions.length === 0">
+          <td colspan="9" class="empty-row">Aucune consommation gasoil trouvee.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="receipt-modal" *ngIf="selectedReceiptUrl" (click)="closeReceipt()">
+    <div class="receipt-dialog" (click)="$event.stopPropagation()">
+      <button type="button" class="close-button" (click)="closeReceipt()">Fermer</button>
+      <img [src]="selectedReceiptUrl" alt="Ticket gasoil agrandi" />
+    </div>
+  </div>
 </section>

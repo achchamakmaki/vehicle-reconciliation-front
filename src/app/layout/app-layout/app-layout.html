@@ -1,27 +1,5 @@
 <div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-mark">JA</span>
-      <div>
-        <strong>Jbel Annour</strong>
-        <small>Gestion flotte</small>
-      </div>
-    </div>
-
-    <nav class="navigation" aria-label="Navigation principale">
-      <a
-        *ngFor="let item of navigationItems"
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-      >
-        {{ item.label }}
-        <small *ngIf="item.adminOnly && !authService.isAdmin()">ADMIN</small>
-      </a>
-    </nav>
-
-    <button class="logout" type="button" (click)="logout()">Deconnexion</button>
-  </aside>
+  <app-sidebar></app-sidebar>
 
   <main class="main-panel">
     <header class="topbar">

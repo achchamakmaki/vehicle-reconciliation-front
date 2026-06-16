@@ -14,8 +14,14 @@
       <option value="ACTIF">ACTIF</option>
       <option value="INACTIF">INACTIF</option>
     </select>
-    <button type="submit">{{ form.id ? 'Modifier' : 'Ajouter' }}</button>
+    <button type="submit" [disabled]="saving">
+      {{ saving ? 'Enregistrement...' : (form.id ? 'Modifier' : 'Ajouter') }}
+    </button>
   </form>
+
+  <p class="message info" *ngIf="loading">Chargement des chauffeurs...</p>
+  <p class="message success" *ngIf="message">{{ message }}</p>
+  <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
   <table>
     <thead>
@@ -29,16 +35,20 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let driver of drivers">
-        <td>{{ driver.fullName }}</td>
-        <td>{{ driver.phone }}</td>
-        <td>{{ driver.cin }}</td>
-        <td>{{ driver.licenseNumber }}</td>
-        <td>{{ driver.status }}</td>
+      <tr *ngFor="let driver of safeDrivers">
+        <td>{{ driver.fullName || '-' }}</td>
+        <td>{{ driver.phone || '-' }}</td>
+        <td>{{ driver.cin || '-' }}</td>
+        <td>{{ driver.licenseNumber || '-' }}</td>
+        <td>{{ driver.status || '-' }}</td>
         <td>
           <button type="button" class="secondary" (click)="edit(driver)">Modifier</button>
           <button type="button" class="danger" (click)="delete(driver.id)">Supprimer</button>
         </td>
+      </tr>
+
+      <tr *ngIf="!loading && driversCount === 0">
+        <td colspan="6" class="empty">Aucun chauffeur trouve.</td>
       </tr>
     </tbody>
   </table>

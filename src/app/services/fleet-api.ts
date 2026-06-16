@@ -3,11 +3,22 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface FleetDashboardStats {
-  totalNarsaVehicles: number;
-  totalSageVehicles: number;
-  matchCount: number;
-  absentInSageCount: number;
-  absentInNarsaCount: number;
+  totalNarsaVehicles?: number;
+  totalSageVehicles?: number;
+  matchCount?: number;
+  absentInSageCount?: number;
+  absentInNarsaCount?: number;
+  totalVehicles?: number;
+  compliantVehicles?: number;
+  unpaidInfractions?: number;
+  totalFuelAmount?: number;
+  monthlyFuelAmount?: number;
+  fuelAnomaliesCount?: number;
+  totalFuelConsumption?: number;
+  currentMonthFuelConsumption?: number;
+  detectedAnomalies?: number;
+  vehiclesAbsentInSage?: number;
+  vehiclesAbsentInNarsa?: number;
 }
 
 export interface Vehicle {
@@ -62,9 +73,17 @@ export interface FuelConsumption {
   driverName?: string;
   station?: string;
   consumptionDate?: string;
+  fuelTime?: string;
+  invoiceNumber?: string;
+  product?: string;
   liters?: number;
+  unitPrice?: number;
   amount?: number;
+  paymentMethod?: string;
   receiptPhotoPath?: string;
+  receiptPhotoUrl?: string;
+  status?: string;
+  source?: string;
   notes?: string;
 }
 
@@ -87,7 +106,11 @@ export class FleetApiService {
   constructor(private http: HttpClient) {}
 
   getDashboardStats(): Observable<FleetDashboardStats> {
-    return this.http.get<FleetDashboardStats>(`${this.apiBaseUrl}/narsa/stats`);
+    return this.http.get<FleetDashboardStats>(`${this.apiBaseUrl}/dashboard/stats`);
+  }
+
+  getRecentFuelConsumptions(): Observable<FuelConsumption[]> {
+    return this.http.get<FuelConsumption[]>(`${this.apiBaseUrl}/dashboard/recent-fuel-consumptions`);
   }
 
   getVehicles(): Observable<Vehicle[]> {
@@ -167,6 +190,12 @@ export class FleetApiService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<FuelConsumption>(`${this.apiBaseUrl}/fuel-consumptions/${id}/receipt`, formData);
+  }
+
+  getFuelReceipt(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiBaseUrl}/fuel-consumptions/${id}/receipt`, {
+      responseType: 'blob',
+    });
   }
 
   deleteFuelConsumption(id: number): Observable<void> {

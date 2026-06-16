@@ -9,12 +9,55 @@
 
   <div class="dashboard-grid">
     <article class="metric-card" *ngFor="let card of cards">
-      <span>{{ card.label }}</span>
-      <strong>{{ card.value | number }}</strong>
+      <div class="metric-top">
+        <span>{{ card.label }}</span>
+        <i class="fa-solid" [ngClass]="card.icon"></i>
+      </div>
+      <strong>
+        {{ card.value | number:'1.0-2' }}
+        <small *ngIf="card.money">MAD</small>
+      </strong>
     </article>
   </div>
 
   <p class="empty-state" *ngIf="!loading && !errorMessage && !stats">
     Aucune statistique chargee.
   </p>
+
+  <section class="recent-section">
+    <div class="section-heading">
+      <h3>Dernieres consommations gasoil</h3>
+      <span>{{ recentFuelConsumptions.length }} ligne(s)</span>
+    </div>
+
+    <p class="message info" *ngIf="recentFuelLoading">Chargement des dernieres consommations...</p>
+    <p class="message error" *ngIf="recentFuelErrorMessage">{{ recentFuelErrorMessage }}</p>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Date</th>
+            <th>Litres</th>
+            <th>Montant</th>
+            <th>Paiement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fuel of recentFuelConsumptions">
+            <td>{{ fuel.station || '-' }}</td>
+            <td>{{ fuel.consumptionDate || '-' }}</td>
+            <td>{{ fuel.liters | number:'1.0-2' }}</td>
+            <td>{{ fuel.amount | number:'1.0-2' }} MAD</td>
+            <td>{{ fuel.paymentMethod || '-' }}</td>
+          </tr>
+
+          <tr *ngIf="!recentFuelLoading && !recentFuelErrorMessage && recentFuelConsumptions.length === 0">
+            <td colspan="5" class="empty-cell">Aucune consommation gasoil trouvee.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </section>

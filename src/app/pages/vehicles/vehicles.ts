@@ -42,17 +42,22 @@ export class VehiclesComponent implements OnInit {
     ).subscribe(() => this.loadVehicles());
   }
 
-  get filteredVehicles() {
+  get filteredVehicles(): Vehicle[] {
+    const vehicles = Array.isArray(this.vehicles) ? this.vehicles : [];
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
-      return this.vehicles;
+      return vehicles;
     }
 
-    return this.vehicles.filter((vehicle) =>
+    return vehicles.filter((vehicle) =>
       vehicle.matricule?.toLowerCase().includes(term) ||
       vehicle.normalizedMatricule?.toLowerCase().includes(term) ||
       vehicle.sageCode?.toLowerCase().includes(term),
     );
+  }
+
+  get filteredVehiclesCount(): number {
+    return this.filteredVehicles.length;
   }
 
   loadVehicles() {
@@ -66,8 +71,9 @@ export class VehiclesComponent implements OnInit {
       }),
     ).subscribe({
       next: (vehicles) => {
-        if (vehicles.length > 0) {
-          this.vehicles = vehicles;
+        const loadedVehicles = Array.isArray(vehicles) ? vehicles : [];
+        if (loadedVehicles.length > 0) {
+          this.vehicles = loadedVehicles;
           this.dataSource = 'Base locale';
           return;
         }
@@ -93,10 +99,11 @@ export class VehiclesComponent implements OnInit {
       }),
     ).subscribe({
       next: (vehicles) => {
-        this.vehicles = vehicles;
+        const loadedVehicles = Array.isArray(vehicles) ? vehicles : [];
+        this.vehicles = loadedVehicles;
         this.dataSource = 'API Sage X3';
-        this.message = vehicles.length
-          ? `${vehicles.length} vehicule(s) charges depuis Sage X3.`
+        this.message = loadedVehicles.length
+          ? `${loadedVehicles.length} vehicule(s) charges depuis Sage X3.`
           : 'Aucun vehicule retourne par Sage X3.';
       },
       error: (error: HttpErrorResponse) => {
@@ -192,13 +199,14 @@ export class VehiclesComponent implements OnInit {
   }
 
   private upsertVehicle(vehicle: Vehicle) {
-    const index = this.vehicles.findIndex((currentVehicle) => currentVehicle.id === vehicle.id);
+    const vehicles = Array.isArray(this.vehicles) ? this.vehicles : [];
+    const index = vehicles.findIndex((currentVehicle) => currentVehicle.id === vehicle.id);
     if (index >= 0) {
-      this.vehicles = this.vehicles.map((currentVehicle) => currentVehicle.id === vehicle.id ? vehicle : currentVehicle);
+      this.vehicles = vehicles.map((currentVehicle) => currentVehicle.id === vehicle.id ? vehicle : currentVehicle);
       return;
     }
 
-    this.vehicles = [vehicle, ...this.vehicles];
+    this.vehicles = [vehicle, ...vehicles];
   }
 
   private clearMessages() {

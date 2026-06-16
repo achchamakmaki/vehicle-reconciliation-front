@@ -1,0 +1,49 @@
+<button
+  class="sidebar-toggle"
+  type="button"
+  aria-label="Ouvrir le menu"
+  [attr.aria-expanded]="sidebarOpen"
+  (click)="toggleSidebar()"
+>
+  <i class="fa-solid" [ngClass]="sidebarOpen ? 'fa-xmark' : 'fa-bars'"></i>
+</button>
+
+<div class="sidebar-backdrop" *ngIf="sidebarOpen" (click)="closeSidebar()"></div>
+
+<aside class="sidebar" [class.open]="sidebarOpen">
+  <div class="brand">
+    <div class="brand-mark">
+      <img src="assets/jbel-annour-logo.png" alt="Logo Jbel Annour" />
+    </div>
+    <div class="brand-copy">
+      <strong>Jbel Annour</strong>
+      <span>Gestion Flotte</span>
+    </div>
+  </div>
+
+  <div class="user-card">
+    <div class="avatar">{{ currentUserInitials }}</div>
+    <div class="user-info">
+      <strong>{{ currentUserName }}</strong>
+      <span>{{ currentUserRole }}</span>
+    </div>
+  </div>
+
+  <nav class="navigation" aria-label="Navigation principale">
+    <a
+      *ngFor="let item of navigationItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+      (click)="closeSidebar()"
+    >
+      <i class="fa-solid" [ngClass]="item.icon"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <button class="logout" type="button" (click)="logout()">
+    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+    <span>Deconnexion</span>
+  </button>
+</aside>
