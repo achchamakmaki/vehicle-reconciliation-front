@@ -5,7 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, finalize } from 'rxjs';
-import { FleetApiService, Vehicle } from '../../services/fleet-api';
+import { FleetApiService, SageVehicleSyncSummary, Vehicle } from '../../services/fleet-api';
 
 @Component({
   selector: 'app-vehicles',
@@ -21,6 +21,7 @@ export class VehiclesComponent implements OnInit {
   searchTerm = '';
   loading = false;
   saving = false;
+  syncingSage = false;
   errorMessage = '';
   message = '';
   dataSource = 'Base locale';
@@ -72,13 +73,8 @@ export class VehiclesComponent implements OnInit {
     ).subscribe({
       next: (vehicles) => {
         const loadedVehicles = Array.isArray(vehicles) ? vehicles : [];
-        if (loadedVehicles.length > 0) {
-          this.vehicles = loadedVehicles;
-          this.dataSource = 'Base locale';
-          return;
-        }
-
-        this.loadSageX3Vehicles();
+        this.vehicles = loadedVehicles;
+        this.dataSource = 'Base locale';
       },
       error: (error: HttpErrorResponse) => {
         this.errorMessage = error.status === 403
@@ -88,29 +84,27 @@ export class VehiclesComponent implements OnInit {
     });
   }
 
-  loadSageX3Vehicles() {
-    this.loading = true;
+  syncSageVehicles() {
+    this.syncingSage = true;
+    this.clearMessages();
     this.errorMessage = '';
 
-    this.fleetApi.getSageX3Vehicles().pipe(
+    this.fleetApi.syncSageVehicles().pipe(
       finalize(() => {
-        this.loading = false;
+        this.syncingSage = false;
         this.cdr.detectChanges();
       }),
     ).subscribe({
-      next: (vehicles) => {
-        const loadedVehicles = Array.isArray(vehicles) ? vehicles : [];
-        this.vehicles = loadedVehicles;
-        this.dataSource = 'API Sage X3';
-        this.message = loadedVehicles.length
-          ? `${loadedVehicles.length} vehicule(s) charges depuis Sage X3.`
-          : 'Aucun vehicule retourne par Sage X3.';
+      next: (summary: SageVehicleSyncSummary) => {
+        this.message =
+          `Synchronisation Sage X3 terminee : ${summary.totalFetched} recupere(s), `
+          + `${summary.created} cree(s), ${summary.updated} mis a jour.`;
+        this.loadVehicles();
       },
       error: (error: HttpErrorResponse) => {
-        this.vehicles = [];
         this.errorMessage = error.status === 403
           ? 'Session expiree, veuillez vous reconnecter.'
-          : `Impossible de charger les vehicules depuis Sage X3. Statut ${error.status}.`;
+          : error.error?.message || `Impossible de synchroniser les vehicules Sage X3. Statut ${error.status}.`;
       },
     });
   }
@@ -198,6 +192,64 @@ export class VehiclesComponent implements OnInit {
     return (status || 'UNKNOWN').toLowerCase();
   }
 
+  vehicleTypeClass(type?: string) {
+    const value = this.vehicleTypeLabel(type)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    if (value.includes('vehicule de service')) {
+      return 'service';
+    }
+
+    if (value.includes('camion grand tonnage')) {
+      return 'heavy-truck';
+    }
+
+    if (value.includes('camionnette') || value.includes('vul')) {
+      return 'van';
+    }
+
+    if (
+      value.includes('tractopelle') ||
+      value.includes('trax') ||
+      value.includes('chargeuse') ||
+      value.includes('loader') ||
+      value.includes('chariot') ||
+      value.includes('clark')
+    ) {
+      return 'machine';
+    }
+
+    return 'undefined';
+  }
+
+  vehicleTypeLabel(type?: string) {
+    const value = (type || '').trim();
+
+    switch (value) {
+      case '0':
+      case '1234567':
+        return 'Non defini';
+      case '1':
+        return 'Camion grand tonnage';
+      case '2':
+        return 'Camionnette / VUL';
+      case '3':
+        return 'Petit camion benne';
+      case '4':
+        return 'Tractopelle (Trax)';
+      case '5':
+        return 'Chargeuse sur pneus (Loader)';
+      case '6':
+        return 'Chariot elevateur (Clark)';
+      case '7':
+        return 'Vehicule de service';
+      default:
+        return value || 'Non defini';
+    }
+  }
+
   private upsertVehicle(vehicle: Vehicle) {
     const vehicles = Array.isArray(this.vehicles) ? this.vehicles : [];
     const index = vehicles.findIndex((currentVehicle) => currentVehicle.id === vehicle.id);
@@ -218,6 +270,8 @@ export class VehiclesComponent implements OnInit {
     return {
       matricule: '',
       sageCode: '',
+      numeroChassis: '',
+      dateAchat: '',
       marque: '',
       modele: '',
       type: '',

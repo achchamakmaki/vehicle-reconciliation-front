@@ -111,7 +111,7 @@ button:not(:disabled):hover {
 
 table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 1160px;
   border-collapse: collapse;
 }
 
@@ -275,3 +275,4 @@ td button {
     grid-template-columns: 1fr;
   }
 }
+

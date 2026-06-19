@@ -7,7 +7,14 @@
     </div>
 
     <div class="heading-actions">
-      <button class="secondary-action" type="button" (click)="loadSageX3Vehicles()">Charger Sage X3</button>
+      <button
+        class="secondary-action"
+        type="button"
+        [disabled]="syncingSage"
+        (click)="syncSageVehicles()"
+      >
+        {{ syncingSage ? 'Synchronisation Sage...' : 'Charger Sage X3' }}
+      </button>
       <button class="primary-action" type="button" (click)="openCreateForm()">Ajouter vehicule</button>
     </div>
   </div>
@@ -37,6 +44,16 @@
       <label>
         Modele
         <input name="modele" placeholder="Modele" [(ngModel)]="form.modele" />
+      </label>
+
+      <label>
+        Numero chassis
+        <input name="numeroChassis" placeholder="Numero chassis" [(ngModel)]="form.numeroChassis" />
+      </label>
+
+      <label>
+        Date achat
+        <input name="dateAchat" type="date" [(ngModel)]="form.dateAchat" />
       </label>
 
       <label>
@@ -83,9 +100,9 @@
           <th>Sage Code</th>
           <th>Matricule</th>
           <th>Marque</th>
-          <th>Modele</th>
+          <th>Chassis</th>
+          <th>Date achat</th>
           <th>Type</th>
-          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -96,13 +113,14 @@
             <strong>{{ vehicle.matricule }}</strong>
           </td>
           <td>{{ vehicle.marque || '-' }}</td>
-          <td>{{ vehicle.modele || '-' }}</td>
-          <td>{{ vehicle.type || '-' }}</td>
+          <td>{{ vehicle.numeroChassis || '-' }}</td>
+          <td>{{ vehicle.dateAchat || '-' }}</td>
           <td>
-            <span class="status-badge" [ngClass]="statusClass(vehicle.status)">
-              {{ statusLabel(vehicle.status) }}
+            <span class="type-badge" [ngClass]="vehicleTypeClass(vehicle.type)">
+              {{ vehicleTypeLabel(vehicle.type) }}
             </span>
           </td>
+          
           <td class="actions">
             <button type="button" class="secondary" (click)="edit(vehicle)">
               {{ vehicle.id ? 'Modifier' : 'Importer' }}
@@ -112,7 +130,7 @@
         </tr>
 
         <tr *ngIf="!loading && filteredVehiclesCount === 0">
-          <td colspan="7" class="empty">Aucun vehicule trouve.</td>
+          <td colspan="9" class="empty">Aucun vehicule trouve.</td>
         </tr>
       </tbody>
     </table>

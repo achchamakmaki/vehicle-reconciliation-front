@@ -27,7 +27,8 @@
       <thead>
         <tr>
           <th>Numero Facture</th>
-          <th>Date</th>
+          <th>Date ticket</th>
+          <th>Date réception</th>
           <th>Heure</th>
           <th>Litres</th>
           <th>Prix/L</th>
@@ -41,6 +42,7 @@
         <tr *ngFor="let fuel of fuelConsumptions">
           <td>{{ fuel.invoiceNumber || '-' }}</td>
           <td>{{ fuel.consumptionDate || '-' }}</td>
+          <td>{{ formatDateTime(fuel.receivedAt) }}</td>
           <td>{{ fuel.fuelTime || '-' }}</td>
           <td>{{ fuel.liters | number:'1.0-2' }}</td>
           <td>{{ fuel.unitPrice | number:'1.0-2' }}</td>
@@ -76,7 +78,7 @@
         </tr>
 
         <tr *ngIf="!loading && fuelConsumptions.length === 0">
-          <td colspan="9" class="empty-row">Aucune consommation gasoil trouvee.</td>
+          <td colspan="10" class="empty-row">Aucune consommation gasoil trouvee.</td>
         </tr>
       </tbody>
     </table>
@@ -89,3 +91,4 @@
     </div>
   </div>
 </section>
+

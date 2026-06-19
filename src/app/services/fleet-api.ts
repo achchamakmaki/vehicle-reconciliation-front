@@ -26,6 +26,8 @@ export interface Vehicle {
   matricule: string;
   normalizedMatricule?: string;
   sageCode?: string;
+  numeroChassis?: string;
+  dateAchat?: string;
   marque?: string;
   modele?: string;
   type?: string;
@@ -33,6 +35,12 @@ export interface Vehicle {
   source?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface SageVehicleSyncSummary {
+  totalFetched: number;
+  created: number;
+  updated: number;
 }
 
 export interface Driver {
@@ -73,6 +81,7 @@ export interface FuelConsumption {
   driverName?: string;
   station?: string;
   consumptionDate?: string;
+  receivedAt?: string;
   fuelTime?: string;
   invoiceNumber?: string;
   product?: string;
@@ -119,6 +128,10 @@ export class FleetApiService {
 
   getSageX3Vehicles(): Observable<Vehicle[]> {
     return this.http.get<Vehicle[]>(`${this.apiBaseUrl}/vehicles/sage-x3`);
+  }
+
+  syncSageVehicles(): Observable<SageVehicleSyncSummary> {
+    return this.http.post<SageVehicleSyncSummary>(`${this.apiBaseUrl}/vehicles/sync-sage`, {});
   }
 
   createVehicle(vehicle: Vehicle): Observable<Vehicle> {
@@ -206,3 +219,4 @@ export class FleetApiService {
     return this.http.get<AutomationLog[]>(`${this.apiBaseUrl}/automations/logs`);
   }
 }
+
